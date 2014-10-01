@@ -6,7 +6,7 @@ import xml.etree.ElementTree as ET
 
 
 #def status():
-proxy = xmlrpclib.ServerProxy("https://www.endicia.com/ELS/ELSServices.cfc?")
+proxy = xmlrpclib.ServerProxy("https://www.endicia.com/ELS/ELSServices.cfc")
 #count = 0
 #b = Batch()
 #b.etree
@@ -33,7 +33,7 @@ b = ET.fromstring('''
     #b.add_package(ToName('Some Body'),DAZzle.Test)
     #print b.tostring()
 #    ++count
-value = proxy.GetTransactionsListing(9400109699937126318047)
+value = proxy.GetTransactionsListing(b)
 #tree = ET.fromstring(value)
 print 'Status:',value.find('Status').text
 
