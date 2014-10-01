@@ -6,7 +6,7 @@ import time
 #Method: transaction
 #Description: Test the if a package has been refunded
 
-def transaction():
+def transaction(pic_number):
     wsdlFile = 'https://www.endicia.com/ELS/ELSServices.cfc?wsdl'
     server = WSDL.Proxy(wsdlFile)    
     count = 0;
@@ -36,18 +36,20 @@ def transaction():
             <ToZipCode></ToZipCode>
             <FromAddress></FromAddress>
             <TrackingList>
-                <PICNumber>9400109699937126318047</PICNumber>
+                <PICNumber>'''+pic_number+'''</PICNumber>
                 <PieceID></PieceID>
                 <CustomsID></CustomsID>
             </TrackingList>
         </TransactionsListingRequest>'''
+ 
+    print b
     
     try:
         while True:
             count += 1
             
             xml = server.GetTransactionsListing(b)
-            #print xml
+            print xml
             refund_code = xml['TransactionsListingResponse']['TransactionResults']['Transaction']['RefundCode']
             
             if refund_code in ['A','C', 'S', 'U', 'M']:
@@ -71,5 +73,5 @@ def transaction():
         print "Error code: %d" % err.errcode
         print "Error message: %s" % err.errmsg
 
-transaction()
+transaction('9400109699937126318047')
     
