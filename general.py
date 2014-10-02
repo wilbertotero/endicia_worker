@@ -6,22 +6,8 @@ import time
 #Method: transaction
 #Description: Test the if a package has been refunded
 
-def transaction(pic_number):
-    wsdlFile = 'https://www.endicia.com/ELS/ELSServices.cfc?wsdl'
-    server = WSDL.Proxy(wsdlFile)    
-    count = 0;
-    
-    # print server.methods.keys() 
-    # callInfo = server.methods['GetTransactionsListing']
-    # print callInfo.inparams
-    # print callInfo.inparams[0].name
-    # print callInfo.inparams[0].type
-    # 
-    # print callInfo.outparams
-    # print callInfo.outparams[0].name 
-    # print callInfo.outparams[0].type
-    
-    #The value 9400109699937126318047 was inserted by default but can be sent through the method
+def transaction(server, pic_number):
+
     b = '''
        <TransactionsListingRequest>
             <AccountID></AccountID>
@@ -41,30 +27,14 @@ def transaction(pic_number):
                 <CustomsID></CustomsID>
             </TrackingList>
         </TransactionsListingRequest>'''
- 
-    print b
-    
+      
     try:
-        while True:
-            count += 1
-            
-            xml = server.GetTransactionsListing(b)
-            print xml
-            refund_code = xml['TransactionsListingResponse']['TransactionResults']['Transaction']['RefundCode']
-            
-            if refund_code in ['A','C', 'S', 'U', 'M']:
-                print 'Package has been refunded' + refund_code
-                break;
-            
-            elif refund_code == 'R':
-                print 'Package has been rejected' + refund_code
-            else:
-                print 'Package is pending for refund' + refund_code
-            
-            if count == 7: # testint the 7 times       
-                break
-            
-            time.sleep(1) #it can be changed to more second - just to see results of the exercise
+        
+        xml = server.GetTransactionsListing(b)
+        #print xml
+        refund_code = xml['TransactionsListingResponse']['TransactionResults']['Transaction']['RefundCode']
+        
+        return refund_code
       
     except xmlrpclib.ProtocolError as err:
         print "A protocol error occurred"
@@ -73,5 +43,21 @@ def transaction(pic_number):
         print "Error code: %d" % err.errcode
         print "Error message: %s" % err.errmsg
 
-transaction('9400109699937126318047')
+
+wsdlFile = 'https://www.endicia.com/ELS/ELSServices.cfc?wsdl'
+#username = 'username'
+#password = 'password'
+
+server = WSDL.Proxy(wsdlFile)    
+#session = server.login(username, password)
+
+refund_code = transaction(server, '9400109699937126318047')
+
+
+if refund_code in ['A','C', 'S', 'U', 'M']:
+    print 'Package has been refunded' + refund_code
+elif refund_code == 'R':
+    print 'Package has been rejected' + refund_code
+else:
+    print 'Package is pending for refund' + refund_code
     
